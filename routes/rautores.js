@@ -1,44 +1,7 @@
 module.exports = function (app,swig) {
     app.get("/autores", function (req, res) {
 
-        let autores = [{
-            "nombre": "Amaia  Montero",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Cantante"
-
-        }, {
-            "nombre": "Leire Martínez",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Cantante"
-        }, {
-            "nombre": "Pablo Benegas",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Guitarrista"
-        }, {
-            "nombre": "Haritz Garde",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Batería"
-        }, {
-            "nombre": "Xabier San Martín",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Teclista"
-        }, {
-            "nombre": "Álvaro Fuentes",
-            "grupo": "La oreja de Van Gogh",
-            "rol": "Bajista"
-        }, {
-            "nombre": "Raquel del Rosario",
-            "grupo": "El sueño de Morfeo",
-            "rol": "Cantante"
-        }, {
-            "nombre": "David Feito",
-            "grupo": "El sueño de Morfeo",
-            "rol": "Guitarrista"
-        }, {
-            "nombre": "Juan Luis Suárez",
-            "grupo": "El sueño de Morfeo",
-            "rol": "Guitarrista"
-        }];
+        let autores = filtrar_autores();
 
         let respuesta = swig.renderFile('views/autores.html', {
             titulo: "Lista de autores",
@@ -95,8 +58,69 @@ module.exports = function (app,swig) {
         res.send(respuesta);
     });
 
+    app.get('/autores/filtrar/:rol', function (req, res) {
+
+        let autores = filtrar_autores(req.params.rol);
+
+        let respuesta = swig.renderFile('views/autores.html', {
+            titulo: "Lista de autores",
+            autores: autores
+        });
+        res.send(respuesta);
+
+    });
+
     app.get('/autores/*', function (req, res) {
         res.redirect("/autores")
     });
 
+    function filtrar_autores(rol){
+        let lista;
+        let autores = [{
+            "nombre": "Amaia  Montero",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Cantante"
+
+        }, {
+            "nombre": "Leire Martínez",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Cantante"
+        }, {
+            "nombre": "Pablo Benegas",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Guitarrista"
+        }, {
+            "nombre": "Haritz Garde",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Batería"
+        }, {
+            "nombre": "Xabier San Martín",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Teclista"
+        }, {
+            "nombre": "Álvaro Fuentes",
+            "grupo": "La oreja de Van Gogh",
+            "rol": "Bajista"
+        }, {
+            "nombre": "Raquel del Rosario",
+            "grupo": "El sueño de Morfeo",
+            "rol": "Cantante"
+        }, {
+            "nombre": "David Feito",
+            "grupo": "El sueño de Morfeo",
+            "rol": "Guitarrista"
+        }, {
+            "nombre": "Juan Luis Suárez",
+            "grupo": "El sueño de Morfeo",
+            "rol": "Guitarrista"
+        }];
+
+        if(typeof rol !== "undefined" && rol !== null && rol !== ""){
+            lista = autores.filter(autor => autor.rol.toLowerCase() == rol.toLowerCase());
+        }else{
+            lista = autores;
+        }
+
+        return lista;
+    }
 }
