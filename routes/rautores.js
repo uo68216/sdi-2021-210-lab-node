@@ -49,7 +49,29 @@ module.exports = function (app,swig) {
     });
 
     app.get('/autores/agregar', function (req, res) {
-        let respuesta = swig.renderFile('views/autores-agregar.html', {});
+        let roles = [{
+            "value": "cantante",
+            "texto": "Cantante"
+        },{
+            "value": "batería",
+            "texto": "Bateria"
+        },{
+            "value": "guitarrista",
+            "texto": "Guitarrista"
+        },{
+            "value": "bajista",
+            "texto": "Bajista"
+        },{
+            "value": "teclista",
+            "texto": "Teclista"
+        },{
+            "value": "saxofonista",
+            "texto": "Saxofonista"
+        }];
+
+        let respuesta = swig.renderFile('views/autores-agregar.html', {
+            roles: roles
+        });
         res.send(respuesta);
     });
 
