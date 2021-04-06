@@ -3,6 +3,9 @@ let express = require('express');
 let app = express();
 app.use(express.static('public'));
 
+let fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
 let mongo = require('mongodb');
 let swig = require('swig');
 
@@ -12,6 +15,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app,mongo);
+
+//Prueba para parsear multipart/form data
+//let multer = require('multer');
+//let upload = multer({dest: './public/portadas/'});
+//app.use(upload.array());
 
 //Variables
 app.set('port',8081);
