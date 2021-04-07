@@ -32,12 +32,23 @@ module.exports = function (app,swig,gestorBD){
             if (canciones == null) {
                 res.send("Error al recuperar la canción.");
             } else {
-                let respuesta = swig.renderFile('views/bcancion.html', {
-                    cancion: canciones[0]
+                //Aquí recuperamos los comentarios asociados a la canción
+                let criterioComentarios = { "cancion_id": gestorBD.mongo.ObjectID(req.params.id) };
+                gestorBD.obtenerComentarios(criterioComentarios,function(comentarios){
+                    if (comentarios == null) {
+                        res.send("Error al recuperar la canción.");
+                    } else {
+                        let respuesta = swig.renderFile('views/bcancion.html', {
+                            cancion: canciones[0],
+                            comentarios: comentarios
+                        });
+                        res.send(respuesta);
+                    }
                 });
-                res.send(respuesta);
+                
             }
         });
+
     });
 
     app.get('/cancion/modificar/:id', function (req, res) {
