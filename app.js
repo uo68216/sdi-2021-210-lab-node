@@ -16,14 +16,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app,mongo);
 
-//Prueba para parsear multipart/form data
-//let multer = require('multer');
-//let upload = multer({dest: './public/portadas/'});
-//app.use(upload.array());
+let crypto = require('crypto');
+
+let expressSession = require('express-session');
+app.use(expressSession({
+    secret: 'abcdefg',
+    resave: true,
+    saveUninitialized: true
+}));
 
 //Variables
 app.set('port',8081);
 app.set('db','mongodb://admin:6272-GDT@tiendamusica-shard-00-00.zuvhy.mongodb.net:27017,tiendamusica-shard-00-01.zuvhy.mongodb.net:27017,tiendamusica-shard-00-02.zuvhy.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-ay6h0a-shard-0&authSource=admin&retryWrites=true&w=majority');
+app.set('clave','abcdefg');
+app.set('crypto',crypto);
 
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
