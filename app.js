@@ -100,6 +100,12 @@ require("./routes/rcanciones.js")(app,swig,gestorBD); //(app, param1, param2, et
 require("./routes/rautores.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
 require("./routes/rcomentarios.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
 
+
+//Redirección de la página principal
+app.get('/', function (req, res) {
+    res.redirect('/tienda');
+});
+
 //Lanzar el servidor
 app.listen(app.get('port'),function (){
     console.log('Servidor activo');
