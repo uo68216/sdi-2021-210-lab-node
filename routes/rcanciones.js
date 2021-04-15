@@ -27,29 +27,50 @@ module.exports = function (app,swig,gestorBD){
 
     app.get('/cancion/:id', function (req, res) {
         let criterio = { "_id": gestorBD.mongo.ObjectID(req.params.id) };
-
+        let cancionId = gestorBD.mongo.ObjectID(req.params.id);
+        let usuarioActual = req.session.usuario;
         gestorBD.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
                 res.send("Error al recuperar la canción.");
             } else {
-                //Aquí recuperamos los comentarios asociados a la canción
-                let criterioComentarios = { "cancion_id": gestorBD.mongo.ObjectID(req.params.id) };
-                gestorBD.obtenerComentarios(criterioComentarios,function(comentarios){
-                    if (comentarios == null) {
-                        res.send("Error al recuperar la canción.");
+                sePuedeComprarCancion(usuarioActual,cancionId,function (comprar) {
+                    //Aquí recuperamos los comentarios asociados a la canción
+                    let criterioComentarios = { "cancion_id": cancionId };
+                    gestorBD.obtenerComentarios(criterioComentarios,function(comentarios){
+                        if (comentarios == null) {
+                            res.send("Error al recuperar la canción.");
+                        } else {
+                            let respuesta = swig.renderFile('views/bcancion.html', {
+                                cancion: canciones[0],
+                                comentarios: comentarios,
+                                sePuedeComprar: comprar
+                            });
+                            res.send(respuesta);
+                        }
+                    });
+                })
+            }
+        });
+    });
+
+    function sePuedeComprarCancion(usuarioActual,cancionId,functionCallback) {
+        let criterio_usuario_autor = {$and: [{"_id": cancionId},{"autor": usuarioActual}]};
+        let criterio_ya_comprada =  {$and: [{"cancionId": cancionId},{"usuario": usuarioActual}]};
+        gestorBD.obtenerCanciones(criterio_usuario_autor,function(canciones){
+            if (canciones == null || canciones.length > 0) {
+                functionCallback(false);
+            } else {
+                gestorBD.obtenerCanciones(criterio_ya_comprada, function (compradas) {
+                    if (compradas == null || compradas.length > 0) {
+                        functionCallback(false);
                     } else {
-                        let respuesta = swig.renderFile('views/bcancion.html', {
-                            cancion: canciones[0],
-                            comentarios: comentarios
-                        });
-                        res.send(respuesta);
+                        functionCallback(true);
                     }
                 });
-                
             }
         });
 
-    });
+    }
 
     app.get('/cancion/modificar/:id', function (req, res) {
         let criterio = {
@@ -137,17 +158,27 @@ module.exports = function (app,swig,gestorBD){
 
     app.get('/cancion/comprar/:id', function (req, res) {
         let cancionId = gestorBD.mongo.ObjectID(req.params.id);
+        let usuarioActual = req.session.usuario;
         let compra = {
-            usuario: req.session.usuario,
+            usuario: usuarioActual,
             cancionId: cancionId
         }
-        gestorBD.insertarCompra(compra, function (idCompra) {
-            if (idCompra == null) {
-                res.send(respuesta);
-            } else {
-                res.redirect("/compras");
+        sePuedeComprarCancion(usuarioActual,cancionId,function (comprar) {
+            if (comprar){
+                gestorBD.insertarCompra(compra, function (idCompra) {
+                    if (idCompra == null) {
+                        res.send(respuesta);
+                    } else {
+                        res.redirect("/compras");
+                    }
+                });
+            }
+            else{
+                res.send("Ya has comprado la canción o eres el autor");
             }
         });
+
+
     });
 
     app.get('/canciones/:genero/:id', function (req, res) {

@@ -137,3 +137,7 @@ https.createServer({
 },app).listen(app.get('port'),function (){
     console.log("servidor activo");
 });
+
+app.listen(80,function (){
+    console.log('http puerto 80');
+});
