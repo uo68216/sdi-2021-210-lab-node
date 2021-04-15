@@ -2,6 +2,8 @@
 let express = require('express');
 let app = express();
 
+let fs = require ('fs');
+let https = require ('https');
 
 let fileUpload = require('express-fileupload');
 app.use(fileUpload());
@@ -112,6 +114,14 @@ require("./routes/rcanciones.js")(app,swig,gestorBD); //(app, param1, param2, et
 require("./routes/rautores.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
 require("./routes/rcomentarios.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
 
+//Funcion básica de manejo de errores
+app.use(function (err,req, res,next) {
+   console.log("Error producido: "+err); //mostramos el error en consola
+   if(!res.headersSent){
+       res.status(400);
+       res.send("Recurso no disponible");
+   }
+});
 
 //Redirección de la página principal
 app.get('/', function (req, res) {
@@ -119,6 +129,11 @@ app.get('/', function (req, res) {
 });
 
 //Lanzar el servidor
-app.listen(app.get('port'),function (){
-    console.log('Servidor activo');
+//app.listen(app.get('port'),function (){ console.log('Servidor activo'); });
+
+https.createServer({
+    key: fs.readFileSync('certificates/alice.key'),
+    cert: fs.readFileSync('certificates/alice.crt')
+},app).listen(app.get('port'),function (){
+    console.log("servidor activo");
 });

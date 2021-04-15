@@ -1,8 +1,10 @@
 module.exports = function (app,swig,gestorBD){
     app.post('/comentarios/:id', function (req, res) {
         if ( req.session.usuario == null) {
-            res.send("Error: No hay un usuario en sesión.");
-            //Aquí mejor redirigir a login o añadir la ruta a routerUsuarioSession
+            //res.send("Error: No hay un usuario en sesión.");
+            //Redirigir a login
+            res.redirect("/identificarse");
+            return;
         }
         let id = req.params.id;
         let comentario = {
@@ -18,7 +20,5 @@ module.exports = function (app,swig,gestorBD){
                 res.redirect("/cancion/"+req.params.id);
             }
         });
-
     });
-
 }
