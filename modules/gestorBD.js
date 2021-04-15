@@ -1,11 +1,11 @@
 module.exports = {
-    mongo: null,
-    app: null,
-    init: function (app, mongo) {
+    "mongo": null,
+    "app": null,
+    "init": function (app, mongo) {
         this.mongo = mongo;
         this.app = app;
     },
-    insertarCancion: function (cancion, funcionCallback) {
+    "insertarCancion": function (cancion, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -22,7 +22,7 @@ module.exports = {
             }
         });
     },
-    obtenerCanciones: function (criterio,funcionCallback) {
+    "obtenerCanciones": function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -40,14 +40,14 @@ module.exports = {
         });
     },
 
-    modificarCancion: function (criterio, cancion, funcionCallback) {
+    "modificarCancion": function (criterio, cancion, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('canciones');
                 collection.update(criterio, {
-                    $set: cancion
+                    "$set": cancion
                 }, function (err, result) {
                     if (err) {
                         funcionCallback(null);
@@ -60,7 +60,7 @@ module.exports = {
         });
     },
 
-    eliminarCancion: function (criterio, funcionCallback) {
+    "eliminarCancion": function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -78,7 +78,7 @@ module.exports = {
         });
     },
 
-    insertarUsuario: function (usuario, funcionCallback) {
+    "insertarUsuario": function (usuario, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -96,7 +96,7 @@ module.exports = {
         });
     },
 
-    obtenerUsuarios: function (criterio, funcionCallback) {
+    "obtenerUsuarios": function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -114,7 +114,7 @@ module.exports = {
         });
     },
 
-    insertarComentario: function (comentario, funcionCallback) {
+    "insertarComentario": function (comentario, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -132,7 +132,7 @@ module.exports = {
         });
     },
 
-    obtenerComentarios: function (criterio, funcionCallback) {
+    "obtenerComentarios": function (criterio, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
                 funcionCallback(null);
@@ -143,6 +143,42 @@ module.exports = {
                         funcionCallback(null);
                     } else {
                         funcionCallback(comentarios);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
+
+    "insertarCompra": function (compra, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('compras');
+                collection.insert(compra, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
+
+    "obtenerCompras": function (criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('compras');
+                collection.find(criterio).toArray(function (err, usuarios) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(usuarios);
                     }
                     db.close();
                 });
