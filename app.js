@@ -109,10 +109,11 @@ app.set('crypto',crypto);
 app.use(express.static('public'));
 
 //Rutas/controladores por lógica
-require("./routes/rusuarios.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
-require("./routes/rcanciones.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
-require("./routes/rautores.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
-require("./routes/rcomentarios.js")(app,swig,gestorBD); //(app, param1, param2, etc.)
+require("./routes/rusuarios.js")(app,swig,gestorBD);
+require("./routes/rcanciones.js")(app,swig,gestorBD);
+require("./routes/rautores.js")(app,swig,gestorBD);
+require("./routes/rcomentarios.js")(app,swig,gestorBD);
+require("./routes/rapicanciones.js")(app, gestorBD);
 
 //Funcion básica de manejo de errores
 app.use(function (err,req, res,next) {
