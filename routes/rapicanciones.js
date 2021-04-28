@@ -23,13 +23,13 @@ module.exports = function (app, gestorBD) {
         gestorBD.insertarCancion(cancion, function (id) {
             if (id == null) {
                 res.status(500);
-                res.json({ error: "se ha producido un error" })
+                res.json({ error: "se ha producido un error" });
             } else {
                 res.status(201);
                 res.json({
                     mensaje: "canción insertada",
                     _id: id
-                })
+                });
             }
         });
     });
@@ -39,7 +39,7 @@ module.exports = function (app, gestorBD) {
         gestorBD.obtenerCanciones(criterio, function (canciones) {
             if (canciones == null) {
                 res.status(500);
-                res.json({error: "se ha producido un error"})
+                res.json({error: "se ha producido un error"});
             } else {
                 res.status(200);
                 res.send(JSON.stringify(canciones[0]));
@@ -74,13 +74,36 @@ module.exports = function (app, gestorBD) {
         gestorBD.modificarCancion(criterio, cancion, function (result) {
             if (result == null) {
                 res.status(500);
-                res.json({ error: "se ha producido un error" })
+                res.json({ error: "se ha producido un error" });
             } else {
                 res.status(200);
                 res.json({
                     mensaje: "canción modificada",
                     _id: req.params.id
-                })
+                });
+            }
+        });
+    });
+
+    app.post("/api/autenticar", function (req, res) {
+       let seguro = app.get("crypto").createHmac('sha256',app.get('clave')).update(req.body.password).digest('hex');
+
+       let criterio = {
+           email : req.body.email,
+           password: seguro
+       };
+
+        gestorBD.obtenerUsuarios(criterio,function (usuarios) {
+            if (usuarios == null || usuarios.length == 0) {
+                res.status(401); // Unauthorized
+                res.json({ autenticado: false });
+            } else {
+                let token = app.get('jwt').sign( { usuario: criterio.email , tiempo: Date.now()/1000 }, "secreto");
+                res.status(200);
+                res.json({
+                    autenticado: true,
+                    token : token
+                });
             }
         });
     });
